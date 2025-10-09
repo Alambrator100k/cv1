@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منشئ السيرة الذاتية للطلاب</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --text-color: #333;
+            --bg-color: #f9f9f9;
+            --section-bg: #fff;
+            --font-size: 16px;
+            --font-family: 'Arial', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size);
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 0 auto;
+            gap: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .main-content {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .controls {
+            flex: 1;
+            min-width: 300px;
+            background-color: var(--section-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .cv-preview {
+            flex: 2;
+            min-width: 400px;
+            background-color: var(--section-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .cv-container {
+            width: 100%;
+            max-width: 600px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .cv-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 15px;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-left: 20px;
+            border: 3px solid var(--primary-color);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .cv-section {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-weight: bold;
+            min-width: 150px;
+            margin-left: 10px;
+        }
+
+        .section-content {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 5px;
+            margin-right: auto;
+        }
+
+        .delete-section, .edit-section {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 3px 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .edit-section {
+            background-color: #3498db;
+        }
+
+        .delete-section:hover {
+            background-color: #c0392b;
+        }
+
+        .edit-section:hover {
+            background-color: #2980b9;
+        }
+
+        .image-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .image-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .image-option.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .download-options {
+            display: flex;
+            gap: 10px;
+        }
+
+        .download-option {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background-color: #2ecc71;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .download-option:hover {
+            background-color: #27ae60;
+        }
+
+        .design-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .design-option {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .design-option.active {
+            border-color: var(--primary-color);
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .edit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .controls, .cv-preview {
+                min-width: 100%;
+            }
+            
+            .cv-section {
+                flex-direction: column;
+            }
+            
+            .section-title {
+                min-width: auto;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>منشئ السيرة الذاتية للطلاب</h1>
+        </div>
+        
+        <div class="main-content">
+            <div class="controls">
+                <div class="control-group">
+                    <h3>تخصيص المظهر</h3>
+                    <label for="fontSize">حجم الخط:</label>
+                    <input type="range" id="fontSize" min="12" max="24" value="16">
+                    
+                    <label for="primaryColor">اللون الأساسي:</label>
+                    <input type="color" id="primaryColor" value="#3498db">
+                    
+                    <label for="fontFamily">نوع الخط:</label>
+                    <select id="fontFamily">
+                        <option value="Arial, sans-serif">Arial</option>
+                        <option value="'Times New Roman', serif">Times New Roman</option>
+                        <option value="'Courier New', monospace">Courier New</option>
+                        <option value="Tahoma, sans-serif">Tahoma</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <h3>تصميم السيرة الذاتية</h3>
+                    <div class="design-options" id="designOptions">
+                        <div class="design-option active" data-design="1">التصميم 1</div>
+                        <div class="design-option" data-design="2">التصميم 2</div>
+                        <div class="design-option" data-design="3">التصميم 3</div>
+                        <div class="design-option" data-design="4">التصميم 4</div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>صورة الملف الشخصي</h3>
+                    <input type="file" id="imageUpload" accept="image/*">
+                    
+                    <label>شكل الصورة:</label>
+                    <div class="image-options">
+                        <div class="image-option active" data-shape="circle">دائرية</div>
+                        <div class="image-option" data-shape="square">مربعة</div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <h3>إضافة قسم جديد</h3>
+                    <input type="text" id="sectionTitle" placeholder="عنوان القسم (مثال: الاسم)">
+                    <input type="text" id="sectionContent" placeholder="محتوى القسم">
+                    <button id="addSection">إضافة قسم</button>
+                </div>
+                
+                <div class="control-group">
+                    <h3>تحميل السيرة الذاتية</h3>
+                    <div class="download-options">
+                        <div class="download-option" data-quality="1">جودة عادية</div>
+                        <div class="download-option" data-quality="2">جودة HD</div>
+                        <div class="download-option" data-quality="3">جودة 4K</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cv-preview">
+                <div class="cv-container" id="cvContainer">
+                    <div class="cv-header">
+                        <img src="" alt="صورة الملف الشخصي" class="profile-image" id="profileImage">
+                        <div class="profile-info">
+                            <h2 id="studentName">ایمن ابوزید فراج</h2>
+                            <p id="studentClass">الفصل: ٣/١</p>
+                            <p id="studentCode">كود الطالب: ١٠</p>
+                        </div>
+                    </div>
+                    
+                    <div class="cv-sections" id="cvSections">
+                        <!-- سيتم إضافة الأقسام هنا ديناميكيًا -->
+                    </div>
+                </div>
+                
+                <button id="downloadCV">تحميل السيرة الذاتية</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة التعديل -->
+    <div class="edit-modal" id="editModal">
+        <div class="modal-content">
+            <h3>تعديل القسم</h3>
+            <input type="text" id="editSectionTitle" placeholder="عنوان القسم">
+            <input type="text" id="editSectionContent" placeholder="محتوى القسم">
+            <div class="modal-buttons">
+                <button id="saveEdit">حفظ التغييرات</button>
+                <button id="cancelEdit">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        // البيانات الأساسية
+        const cvData = {
+            sections: [
+                { title: "الرقم القومي", content: "٣٠٧١١١٢٠٢٠١٤٥٨" },
+                { title: "الديانه", content: "مسلم" },
+                { title: "الجنسيه", content: "مصري" },
+                { title: "تاريخ الميلاد", content: "۲٠٠۷/۱۱/۱۲" },
+                { title: "الحالة الاجتماعيه", content: "اعزب" },
+                { title: "المؤهل الدراسي", content: "طالب ببرنامج فني هندسه زراعيه بمنهج الجدرات" },
+                { title: "العنوان بالتفصيل", content: "بهيج بجوار مدرسه عبدالوهاب الاعداديه -برج العرب الاسكندريه" },
+                { title: "رقم تلفون الطالب", content: "٠١٠٨٠٤٨٢١٦٣" },
+                { title: "اسم ولي الأمر", content: "ابوذيد فراج جمعه" },
+                { title: "رقم تلفون ولي الأمر", content: "٠١١٤٥٢٠٩٠٠٣" },
+                { title: "وظيفه ولي الأمر", content: "عامل" },
+                { title: "العام الدراسي", content: "٢٠٢٥ / ٢٠٢٦" },
+                { title: "الهوايه", content: "برمجه الحواسيب" }
+            ]
+        };
+
+        // متغيرات لتتبع التعديل
+        let currentEditIndex = -1;
+
+        // تهيئة الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            // تحميل الأقسام من البيانات
+            loadSections();
+            
+            // إعداد المستمعين للأحداث
+            setupEventListeners();
+        });
+
+        // تحميل الأقسام في السيرة الذاتية
+        function loadSections() {
+            const cvSections = document.getElementById('cvSections');
+            cvSections.innerHTML = '';
+            
+            cvData.sections.forEach((section, index) => {
+                const sectionElement = createSectionElement(section.title, section.content, index);
+                cvSections.appendChild(sectionElement);
+            });
+        }
+
+        // إنشاء عنصر قسم جديد
+        function createSectionElement(title, content, index) {
+            const sectionDiv = document.createElement('div');
+            sectionDiv.className = 'cv-section';
+            sectionDiv.dataset.index = index;
+            
+            const sectionTitle = document.createElement('span');
+            sectionTitle.className = 'section-title';
+            sectionTitle.textContent = title;
+            
+            const sectionContent = document.createElement('div');
+            sectionContent.className = 'section-content';
+            sectionContent.textContent = content;
+            
+            const sectionActions = document.createElement('div');
+            sectionActions.className = 'section-actions';
+            
+            const editButton = document.createElement('button');
+            editButton.className = 'edit-section';
+            editButton.textContent = 'تعديل';
+            editButton.addEventListener('click', function() {
+                editSection(index);
+            });
+            
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'delete-section';
+            deleteButton.textContent = 'حذف';
+            deleteButton.addEventListener('click', function() {
+                deleteSection(index);
+            });
+            
+            sectionActions.appendChild(editButton);
+            sectionActions.appendChild(deleteButton);
+            
+            sectionDiv.appendChild(sectionTitle);
+            sectionDiv.appendChild(sectionContent);
+            sectionDiv.appendChild(sectionActions);
+            
+            return sectionDiv;
+        }
+
+        // حذف قسم
+        function deleteSection(index) {
+            if (confirm('هل أنت متأكد من حذف هذا القسم؟')) {
+                cvData.sections.splice(index, 1);
+                loadSections();
+            }
+        }
+
+        // تعديل قسم
+        function editSection(index) {
+            currentEditIndex = index;
+            const section = cvData.sections[index];
+            
+            document.getElementById('editSectionTitle').value = section.title;
+            document.getElementById('editSectionContent').value = section.content;
+            
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        // إعداد المستمعين للأحداث
+        function setupEventListeners() {
+            // تغيير حجم الخط
+            document.getElementById('fontSize').addEventListener('input', function() {
+                document.documentElement.style.setProperty('--font-size', this.value + 'px');
+            });
+            
+            // تغيير اللون الأساسي
+            document.getElementById('primaryColor').addEventListener('input', function() {
+                document.documentElement.style.setProperty('--primary-color', this.value);
+            });
+            
+            // تغيير نوع الخط
+            document.getElementById('fontFamily').addEventListener('change', function() {
+                document.documentElement.style.setProperty('--font-family', this.value);
+            });
+            
+            // تغيير التصميم
+            document.querySelectorAll('.design-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.design-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    applyDesign(this.dataset.design);
+                });
+            });
+            
+            // تغيير شكل الصورة
+            document.querySelectorAll('.image-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.image-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    applyImageShape(this.dataset.shape);
+                });
+            });
+            
+            // رفع صورة
+            document.getElementById('imageUpload').addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.getElementById('profileImage').src = event.target.result;
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+            
+            // إضافة قسم جديد
+            document.getElementById('addSection').addEventListener('click', function() {
+                const title = document.getElementById('sectionTitle').value;
+                const content = document.getElementById('sectionContent').value;
+                
+                if (title && content) {
+                    cvData.sections.push({ title, content });
+                    loadSections();
+                    
+                    // مسح الحقول
+                    document.getElementById('sectionTitle').value = '';
+                    document.getElementById('sectionContent').value = '';
+                } else {
+                    alert('يرجى ملء جميع الحقول');
+                }
+            });
+            
+            // تحميل السيرة الذاتية
+            document.getElementById('downloadCV').addEventListener('click', function() {
+                downloadCV(2); // جودة افتراضية HD
+            });
+            
+            // خيارات الجودة للتحميل
+            document.querySelectorAll('.download-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    downloadCV(parseInt(this.dataset.quality));
+                });
+            });
+            
+            // أحداث نافذة التعديل
+            document.getElementById('saveEdit').addEventListener('click', function() {
+                if (currentEditIndex !== -1) {
+                    const newTitle = document.getElementById('editSectionTitle').value;
+                    const newContent = document.getElementById('editSectionContent').value;
+                    
+                    if (newTitle && newContent) {
+                        cvData.sections[currentEditIndex].title = newTitle;
+                        cvData.sections[currentEditIndex].content = newContent;
+                        loadSections();
+                        document.getElementById('editModal').style.display = 'none';
+                    } else {
+                        alert('يرجى ملء جميع الحقول');
+                    }
+                }
+            });
+            
+            document.getElementById('cancelEdit').addEventListener('click', function() {
+                document.getElementById('editModal').style.display = 'none';
+            });
+        }
+
+        // تطبيق التصميم المختار
+        function applyDesign(designId) {
+            const root = document.documentElement;
+            
+            switch(designId) {
+                case '1':
+                    // التصميم الأساسي
+                    root.style.setProperty('--primary-color', '#3498db');
+                    root.style.setProperty('--secondary-color', '#2c3e50');
+                    break;
+                case '2':
+                    // تصميم أخضر
+                    root.style.setProperty('--primary-color', '#27ae60');
+                    root.style.setProperty('--secondary-color', '#2c3e50');
+                    break;
+                case '3':
+                    // تصميم أرجواني
+                    root.style.setProperty('--primary-color', '#9b59b6');
+                    root.style.setProperty('--secondary-color', '#34495e');
+                    break;
+                case '4':
+                    // تصميم برتقالي
+                    root.style.setProperty('--primary-color', '#e67e22');
+                    root.style.setProperty('--secondary-color', '#d35400');
+                    break;
+            }
+        }
+
+        // تطبيق شكل الصورة
+        function applyImageShape(shape) {
+            const profileImage = document.getElementById('profileImage');
+            
+            if (shape === 'circle') {
+                profileImage.style.borderRadius = '50%';
+            } else {
+                profileImage.style.borderRadius = '0';
+            }
+        }
+
+        // تحميل السيرة الذاتية كصورة
+        function downloadCV(quality) {
+            const cvContainer = document.getElementById('cvContainer');
+            let scale = 1;
+            
+            // تحديد الجودة بناءً على الاختيار
+            switch(quality) {
+                case 1: // جودة عادية
+                    scale = 1;
+                    break;
+                case 2: // جودة HD
+                    scale = 2;
+                    break;
+                case 3: // جودة 4K
+                    scale = 4;
+                    break;
+            }
+            
+            // إخفاء أزرار الحذف والتعديل قبل التقاط الصورة
+            const actionButtons = document.querySelectorAll('.section-actions');
+            actionButtons.forEach(button => {
+                button.style.display = 'none';
+            });
+            
+            // استخدام html2canvas لتحويل السيرة الذاتية إلى صورة
+            html2canvas(cvContainer, {
+                scale: scale,
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                // إعادة عرض أزرار الحذف والتعديل بعد التقاط الصورة
+                actionButtons.forEach(button => {
+                    button.style.display = 'flex';
+                });
+                
+                // تحويل Canvas إلى صورة
+                const image = canvas.toDataURL('image/png');
+                
+                // إنشاء رابط تحميل
+                const link = document.createElement('a');
+                link.href = image;
+                link.download = 'السيرة_الذاتية.png';
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
