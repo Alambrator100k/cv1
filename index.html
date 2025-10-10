@@ -84,7 +84,7 @@
             margin-bottom: 5px;
         }
 
-        input, select, button {
+        input, select, button, textarea {
             width: 100%;
             padding: 8px;
             margin-bottom: 10px;
@@ -272,6 +272,33 @@
             flex: 1;
         }
 
+        .edit-profile-btn {
+            margin-top: 10px;
+            background-color: #f39c12;
+        }
+
+        .edit-profile-btn:hover {
+            background-color: #e67e22;
+        }
+
+        .image-preview-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .change-image-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
@@ -300,6 +327,11 @@
         
         <div class="main-content">
             <div class="controls">
+                <div class="control-group">
+                    <h3>تعديل البيانات الأساسية</h3>
+                    <button id="editProfileBtn" class="edit-profile-btn">تعديل الاسم والصف والكود</button>
+                </div>
+                
                 <div class="control-group">
                     <h3>تخصيص المظهر</h3>
                     <label for="fontSize">حجم الخط:</label>
@@ -358,7 +390,10 @@
             <div class="cv-preview">
                 <div class="cv-container" id="cvContainer">
                     <div class="cv-header">
-                        <img src="" alt="صورة الملف الشخصي" class="profile-image" id="profileImage">
+                        <div class="image-preview-container">
+                            <img src="" alt="صورة الملف الشخصي" class="profile-image" id="profileImage">
+                            <button class="change-image-btn" id="changeImageBtn">تغيير الصورة</button>
+                        </div>
                         <div class="profile-info">
                             <h2 id="studentName">ایمن ابوزید فراج</h2>
                             <p id="studentClass">الفصل: ٣/١</p>
@@ -389,10 +424,30 @@
         </div>
     </div>
 
+    <!-- نافذة تعديل البيانات الأساسية -->
+    <div class="edit-modal" id="editProfileModal">
+        <div class="modal-content">
+            <h3>تعديل البيانات الأساسية</h3>
+            <label for="editStudentName">الاسم:</label>
+            <input type="text" id="editStudentName" placeholder="اسم الطالب">
+            <label for="editStudentClass">الصف:</label>
+            <input type="text" id="editStudentClass" placeholder="الصف الدراسي">
+            <label for="editStudentCode">كود الطالب:</label>
+            <input type="text" id="editStudentCode" placeholder="كود الطالب">
+            <div class="modal-buttons">
+                <button id="saveProfileEdit">حفظ التغييرات</button>
+                <button id="cancelProfileEdit">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script>
         // البيانات الأساسية
         const cvData = {
+            studentName: "ایمن ابوزید فراج",
+            studentClass: "١/٣",
+            studentCode: "١٠",
             sections: [
                 { title: "الرقم القومي", content: "٣٠٧١١١٢٠٢٠١٤٥٨" },
                 { title: "الديانه", content: "مسلم" },
@@ -400,6 +455,7 @@
                 { title: "تاريخ الميلاد", content: "۲٠٠۷/۱۱/۱۲" },
                 { title: "الحالة الاجتماعيه", content: "اعزب" },
                 { title: "المؤهل الدراسي", content: "طالب ببرنامج فني هندسه زراعيه بمنهج الجدرات" },
+                { title: "المده", content: "ورش" },
                 { title: "العنوان بالتفصيل", content: "بهيج بجوار مدرسه عبدالوهاب الاعداديه -برج العرب الاسكندريه" },
                 { title: "رقم تلفون الطالب", content: "٠١٠٨٠٤٨٢١٦٣" },
                 { title: "اسم ولي الأمر", content: "ابوذيد فراج جمعه" },
@@ -418,9 +474,19 @@
             // تحميل الأقسام من البيانات
             loadSections();
             
+            // تحديث البيانات الأساسية
+            updateBasicInfo();
+            
             // إعداد المستمعين للأحداث
             setupEventListeners();
         });
+
+        // تحديث البيانات الأساسية في السيرة الذاتية
+        function updateBasicInfo() {
+            document.getElementById('studentName').textContent = cvData.studentName;
+            document.getElementById('studentClass').textContent = `الفصل: ${cvData.studentClass}`;
+            document.getElementById('studentCode').textContent = `كود الطالب: ${cvData.studentCode}`;
+        }
 
         // تحميل الأقسام في السيرة الذاتية
         function loadSections() {
@@ -493,6 +559,15 @@
             document.getElementById('editModal').style.display = 'flex';
         }
 
+        // تعديل البيانات الأساسية
+        function editProfile() {
+            document.getElementById('editStudentName').value = cvData.studentName;
+            document.getElementById('editStudentClass').value = cvData.studentClass;
+            document.getElementById('editStudentCode').value = cvData.studentCode;
+            
+            document.getElementById('editProfileModal').style.display = 'flex';
+        }
+
         // إعداد المستمعين للأحداث
         function setupEventListeners() {
             // تغيير حجم الخط
@@ -543,6 +618,11 @@
                 }
             });
             
+            // زر تغيير الصورة
+            document.getElementById('changeImageBtn').addEventListener('click', function() {
+                document.getElementById('imageUpload').click();
+            });
+            
             // إضافة قسم جديد
             document.getElementById('addSection').addEventListener('click', function() {
                 const title = document.getElementById('sectionTitle').value;
@@ -591,6 +671,31 @@
             
             document.getElementById('cancelEdit').addEventListener('click', function() {
                 document.getElementById('editModal').style.display = 'none';
+            });
+            
+            // أحداث نافذة تعديل البيانات الأساسية
+            document.getElementById('editProfileBtn').addEventListener('click', function() {
+                editProfile();
+            });
+            
+            document.getElementById('saveProfileEdit').addEventListener('click', function() {
+                const newName = document.getElementById('editStudentName').value;
+                const newClass = document.getElementById('editStudentClass').value;
+                const newCode = document.getElementById('editStudentCode').value;
+                
+                if (newName && newClass && newCode) {
+                    cvData.studentName = newName;
+                    cvData.studentClass = newClass;
+                    cvData.studentCode = newCode;
+                    updateBasicInfo();
+                    document.getElementById('editProfileModal').style.display = 'none';
+                } else {
+                    alert('يرجى ملء جميع الحقول');
+                }
+            });
+            
+            document.getElementById('cancelProfileEdit').addEventListener('click', function() {
+                document.getElementById('editProfileModal').style.display = 'none';
             });
         }
 
@@ -657,6 +762,9 @@
                 button.style.display = 'none';
             });
             
+            // إخفاء زر تغيير الصورة
+            document.getElementById('changeImageBtn').style.display = 'none';
+            
             // استخدام html2canvas لتحويل السيرة الذاتية إلى صورة
             html2canvas(cvContainer, {
                 scale: scale,
@@ -667,6 +775,9 @@
                 actionButtons.forEach(button => {
                     button.style.display = 'flex';
                 });
+                
+                // إعادة عرض زر تغيير الصورة
+                document.getElementById('changeImageBtn').style.display = 'block';
                 
                 // تحويل Canvas إلى صورة
                 const image = canvas.toDataURL('image/png');
@@ -680,4 +791,4 @@
         }
     </script>
 </body>
-</html>
+                    </html>
